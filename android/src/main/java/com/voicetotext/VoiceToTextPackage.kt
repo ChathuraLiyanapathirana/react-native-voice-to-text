@@ -25,7 +25,9 @@ class VoiceToTextPackage : BaseReactPackage() {
         false,  // canOverrideExistingModule
         false,  // needsEagerInit
         false,  // isCxxModule
-        true // isTurboModule
+        // On the legacy bridge the module is served from the classic
+        // NativeModule registry; on the New Architecture from TurboModuleManager.
+        BuildConfig.IS_NEW_ARCHITECTURE_ENABLED // isTurboModule
       )
       moduleInfos
     }

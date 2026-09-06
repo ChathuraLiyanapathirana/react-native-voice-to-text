@@ -15,7 +15,17 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,m,mm,cpp}"
   s.private_header_files = "ios/generated/**/*.h"
-  
+
+  # The codegen'd TurboModule sources under ios/generated are only needed on
+  # the New Architecture. On the legacy bridge the module is compiled as a
+  # plain RCTBridgeModule (see ios/VoiceToText.h), so leave them out there.
+  new_arch_enabled = if defined?(NewArchitectureHelper) && NewArchitectureHelper.respond_to?(:new_arch_enabled)
+    NewArchitectureHelper.new_arch_enabled
+  else
+    ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+  end
+  s.exclude_files = "ios/generated/**/*" unless new_arch_enabled
+
   # Add Speech framework
   s.frameworks = 'Speech', 'AVFoundation'
 

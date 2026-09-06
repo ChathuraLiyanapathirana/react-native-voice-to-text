@@ -31,6 +31,14 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["VoiceToText_" + name]).toInteger()
 }
 
+// Mirrors the React Native Gradle plugin: the app's `newArchEnabled` property
+// decides the architecture, and since React Native 0.76 the New Architecture
+// is the default when the property is absent.
+def isNewArchitectureEnabled() {
+  def value = rootProject.findProperty("newArchEnabled")
+  return value == null ? true : value.toString().toBoolean()
+}
+
 def supportsNamespace() {
   def parsed = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')
   def major = parsed[0].toInteger()
@@ -56,6 +64,7 @@ android {
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
   }
 
   buildFeatures {

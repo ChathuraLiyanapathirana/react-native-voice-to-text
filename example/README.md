@@ -11,32 +11,18 @@ This example demonstrates the usage of `react-native-voice-to-text` in a React N
 
 ## Running the Example
 
-### Prerequisites
-
-- React Native development environment set up
-- iOS or Android device/simulator
-
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-```sh
-npm install
-```
-3. For iOS, install CocoaPods:
-```sh
-cd ios && pod install && cd ..
-```
-
-### Run the Example
+This repository is a Yarn workspaces monorepo, so use Yarn (not npm) and run
+commands from the repository root:
 
 ```sh
-# For iOS
-npm run ios
-
-# For Android
-npm run android
+yarn
+cd example/ios && pod install && cd ../..
+yarn example start
+yarn example android   # or: yarn example ios
 ```
+
+The full walkthrough, including device selection, testing the legacy
+architecture, and troubleshooting, is in [DEVELOPMENT.md](../DEVELOPMENT.md).
 
 ## Key Components
 
