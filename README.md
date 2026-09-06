@@ -22,11 +22,11 @@ Speech-to-text for React Native using the device's own speech recognition — `S
 
 ### Android
 
-<video src="assets/android/v1.mp4" controls width="260"></video> <video src="assets/android/v2.mp4" controls width="260"></video>
+<img src="assets/android/v1.gif" width="260" alt="Android demo 1" /> <img src="assets/android/v2.gif" width="260" alt="Android demo 2" />
 
 ### iOS
 
-<video src="assets/ios/v1.mp4" controls width="260"></video> <video src="assets/ios/v2.mp4" controls width="260"></video>
+<img src="assets/ios/v1.gif" width="260" alt="iOS demo 1" /> <img src="assets/ios/v2.gif" width="260" alt="iOS demo 2" />
 
 ## Installation
 
