@@ -2,16 +2,13 @@
 
 Speech-to-text for React Native using the device's own speech recognition — `SFSpeechRecognizer` on iOS, `SpeechRecognizer` on Android. No network keys, no third-party service.
 
-- Real-time partial results while the user speaks
-- A **continuous mode** for push-to-talk and dictation, so a session survives normal pauses
-- Volume and raw audio buffer events, for a level meter or your own processing
-- Full TypeScript types
-
 ## Contents
 
 - [Demo](#demo)
+- [Key Features](#key-features)
+- [Platform & Architecture Support](#platform--architecture-support)
 - [Installation](#installation)
-- [Permissions](#permissions)
+- [Setup & Configuration](#setup--configuration)
 - [Quick start](#quick-start)
 - [API](#api)
 - [Continuous mode](#continuous-mode-push-to-talk)
@@ -22,11 +19,32 @@ Speech-to-text for React Native using the device's own speech recognition — `S
 
 ### Android
 
-<img src="assets/android/v1.gif" width="260" alt="Android demo 1" /> <img src="assets/android/v2.gif" width="260" alt="Android demo 2" />
+![Android demo 1](https://raw.githubusercontent.com/ChathuraLiyanapathirana/react-native-voice-to-text/main/assets/android/v1.gif) ![Android demo 2](https://raw.githubusercontent.com/ChathuraLiyanapathirana/react-native-voice-to-text/main/assets/android/v2.gif)
 
 ### iOS
 
-<img src="assets/ios/v1.gif" width="260" alt="iOS demo 1" /> <img src="assets/ios/v2.gif" width="260" alt="iOS demo 2" />
+![iOS demo 1](https://raw.githubusercontent.com/ChathuraLiyanapathirana/react-native-voice-to-text/main/assets/ios/v1.gif) ![iOS demo 2](https://raw.githubusercontent.com/ChathuraLiyanapathirana/react-native-voice-to-text/main/assets/ios/v2.gif)
+
+## Key Features
+
+- **On-device recognition** — `SFSpeechRecognizer` on iOS, `SpeechRecognizer` on Android. No API keys, no network calls, no third-party service.
+- **Real-time partial results** while the user is still speaking.
+- **Continuous mode** for push-to-talk and dictation, so a session survives normal pauses instead of ending after about a second of silence.
+- **Volume and raw audio buffer events**, for a level meter or your own audio processing.
+- **Automatic error recovery** — a dropped connection to the Android recognition service is retried automatically, and a session that errors out mid-way still delivers whatever text was already recognised instead of discarding it.
+- **Confidence scoring** per transcription, with per-segment scores also available on iOS.
+- **Runtime language switching** — read and set the recognition language without restarting the app.
+- **Event-driven API** (`addEventListener`) with payload types inferred per event.
+- **Full TypeScript types.**
+
+## Platform & Architecture Support
+
+| | iOS | Android |
+|---|---|---|
+| Speech engine | `SFSpeechRecognizer` | `SpeechRecognizer` |
+| OS version | Follows your React Native version's own minimum iOS target — this library sets no extra floor | API 24+ (Android 7.0+) |
+| React Native architecture | Old (bridge) and New (TurboModules/Fabric), auto-detected — no config needed | Old (bridge) and New (TurboModules), auto-detected — no config needed |
+| CPU / ABI | Compiled from source on every build — no precompiled framework to fall out of sync | `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64` — no bundled native binaries, so there's no ABI mismatch risk and full compatibility with 16 KB memory page sizes |
 
 ## Installation
 
@@ -34,13 +52,48 @@ Speech-to-text for React Native using the device's own speech recognition — `S
 npm install @appcitor/react-native-voice-to-text
 ```
 
-Works on both React Native architectures with no extra setup: it runs as a TurboModule when your app has the New Architecture enabled, and falls back to the legacy bridge when it is disabled. On Android the library ships no native binaries of its own, so it is compatible with 16 KB page sizes.
+or
 
-## Permissions
+```sh
+yarn add @appcitor/react-native-voice-to-text
+```
 
-### iOS
+The same package works for both a bare React Native app and an Expo app — see [Setup & Configuration](#setup--configuration) for what each one needs afterwards.
 
-Add these two keys to `Info.plist`. Both prompts appear the first time `startListening()` is called, not at app launch.
+## Setup & Configuration
+
+### Expo Projects
+
+This library ships no Expo config plugin, so declare the permissions directly in `app.json` (or `app.config.js`):
+
+```json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app needs access to your microphone for speech recognition",
+        "NSSpeechRecognitionUsageDescription": "This app needs access to speech recognition to convert your voice to text"
+      }
+    },
+    "android": {
+      "permissions": ["RECORD_AUDIO"]
+    }
+  }
+}
+```
+
+This library contains native code, so it needs a [development build](https://docs.expo.dev/develop/development-builds/introduction/) — it will not run inside **Expo Go**. After configuring the permissions above, generate the native projects and run the dev client:
+
+```sh
+npx expo prebuild
+npx expo run:ios     # or: npx expo run:android
+```
+
+The Android runtime permission request below is still required — it's the same call regardless of Expo or bare React Native.
+
+### Bare React Native Projects
+
+**iOS:** Add these two keys to `Info.plist`. Both prompts appear the first time `startListening()` is called, not at app launch.
 
 ```xml
 <key>NSMicrophoneUsageDescription</key>
@@ -49,9 +102,7 @@ Add these two keys to `Info.plist`. Both prompts appear the first time `startLis
 <string>This app needs access to speech recognition to convert your voice to text</string>
 ```
 
-### Android
-
-Declare the permission in `AndroidManifest.xml`:
+**Android:** Declare the permission in `AndroidManifest.xml`:
 
 ```xml
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -181,6 +232,3 @@ What's different in continuous mode:
 
 MIT
 
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
