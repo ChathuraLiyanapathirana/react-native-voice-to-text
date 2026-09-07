@@ -1,6 +1,6 @@
 # react-native-voice-to-text
 
-Speech-to-text for React Native using the device's own speech recognition — `SFSpeechRecognizer` on iOS, `SpeechRecognizer` on Android. No network keys, no third-party service.
+Speech-to-text for React Native using the platform's built-in speech recognition — `SFSpeechRecognizer` on iOS, `SpeechRecognizer` on Android. No API keys, no third-party service.
 
 ## Contents
 
@@ -27,7 +27,7 @@ Speech-to-text for React Native using the device's own speech recognition — `S
 
 ## Key Features
 
-- **On-device recognition** — `SFSpeechRecognizer` on iOS, `SpeechRecognizer` on Android. No API keys, no network calls, no third-party service.
+- **Built-in platform recognition** — `SFSpeechRecognizer` on iOS, `SpeechRecognizer` on Android. No API keys, no third-party service, nothing to configure. The OS decides whether recognition runs on the device or on Apple's / Google's servers; see [Offline use](#offline-use).
 - **Real-time partial results** while the user is still speaking.
 - **Continuous mode** for push-to-talk and dictation, so a session survives normal pauses instead of ending after about a second of silence.
 - **Volume and raw audio buffer events**, for a level meter or your own audio processing.
@@ -215,6 +215,15 @@ What's different in continuous mode:
 - If a session fails partway through, you get an `ERROR`, then whatever text was already recognised is delivered as the final `RESULTS`, then `END` — you don't lose what was already said.
 
 ## Platform notes
+
+### Offline use
+
+The library makes no network calls itself, but the system recognizer it hands audio to may. Neither platform is forced into on-device mode today (`requiresOnDeviceRecognition` on iOS and `createOnDeviceSpeechRecognizer` on Android are not used), so whether recognition works without a connection depends on the device:
+
+- **iOS**: devices with on-device support (iOS 13+, roughly iPhone XS and newer) and a downloaded language work offline; Apple falls back to on-device automatically. Older devices or languages without an on-device model fail with an `ERROR` event.
+- **Android**: devices with the offline speech pack installed for the chosen language (Pixel, recent Samsung) usually work offline. Others fail with `ERROR_NETWORK` or `ERROR_NETWORK_TIMEOUT`. `SpeechRecognizer.isRecognitionAvailable()` can return true even when no offline recognizer exists, so this only surfaces when you start listening.
+
+If you need on-device recognition guaranteed, for example for a privacy claim, don't rely on this library for it yet.
 
 ### Android
 
